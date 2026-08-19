@@ -1,0 +1,19 @@
+version = 1
+revision = 3
+requires-python = ">=3.12"
+
+[manifest]
+members = [
+    "data-center",
+    "mivy-trading",
+]
+
+[[package]]
+name = "data-center"
+version = "0.1.0"
+source = { editable = "backends/data-center" }
+
+[[package]]
+name = "mivy-trading"
+version = "0.1.0"
+source = { virtual = "." }
