@@ -15,8 +15,11 @@ data-center = { workspace = true }
 [dependency-groups]
 dev = [
     "data-center",
+    "httpx>=0.28.1",
     "ipykernel>=7.3.0",
     "ipywidgets>=8.1.9",
     "jupyterlab>=4.6.3",
     "jupytext>=1.19.5",
+    "numpy>=2.5.2",
+    "pandas>=3.0.5",
 ]
