@@ -1,0 +1,59 @@
+.header {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-shell) 93%, transparent);
+}
+
+.titleGroup {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+}
+
+.marker {
+  display: grid;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  place-items: center;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-accent) 9%, transparent),
+    0 0 10px color-mix(in srgb, var(--color-accent) 56%, transparent);
+}
+
+.title {
+  margin: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.header[data-layout='compact'] {
+  min-height: 54px;
+  padding: 9px 14px;
+}
