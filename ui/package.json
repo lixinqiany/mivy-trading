@@ -15,9 +15,11 @@
   "dependencies": {
     "antd": "^6.6.3",
     "echarts": "^6.1.0",
+    "i18next": "^26.4.2",
     "lightweight-charts": "^5.2.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-i18next": "^17.0.13",
     "react-router-dom": "^7.18.3"
   },
   "devDependencies": {
@@ -28,6 +30,7 @@
     "@vitejs/plugin-react": "^6.1.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-i18next": "^6.1.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",
     "globals": "^17.12.0",
