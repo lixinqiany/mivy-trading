@@ -1,16 +1,25 @@
-export type NavigationIcon = 'activity' | 'database-zap' | 'layers' | 'orbit';
+import type { ParseKeys } from 'i18next';
+import activityIcon from '../assets/icons/activity.svg';
+import databaseZapIcon from '../assets/icons/database-zap.svg';
+import layersIcon from '../assets/icons/layers.svg';
+import orbitIcon from '../assets/icons/orbit.svg';
+
+type NavigationTranslationKey = ParseKeys<['navigation']>;
+type BusinessTranslationKey = ParseKeys<
+  ['securityPool', 'watchlists', 'dataCrawling', 'taskCenter']
+>;
 
 export interface NavigationItem {
   id: string;
   path: string;
-  label: string;
-  headerTitle: string;
-  icon: NavigationIcon;
+  labelKey: NavigationTranslationKey;
+  headerTitleKey: BusinessTranslationKey;
+  icon: string;
 }
 
 export interface NavigationGroup {
   id: string;
-  label: string;
+  labelKey: NavigationTranslationKey;
   items: readonly NavigationItem[];
 }
 
@@ -24,41 +33,41 @@ export const APP_PATHS = {
 export const NAVIGATION_GROUPS: readonly NavigationGroup[] = [
   {
     id: 'asset-layer',
-    label: 'Asset layer',
+    labelKey: 'navigation:groups.assetLayer',
     items: [
       {
         id: 'security-pool',
         path: APP_PATHS.securityPool,
-        label: '证券池',
-        headerTitle: '全局证券池',
-        icon: 'orbit',
+        labelKey: 'navigation:items.securityPool',
+        headerTitleKey: 'securityPool:headerTitle',
+        icon: orbitIcon,
       },
       {
         id: 'watchlists',
         path: APP_PATHS.watchlists,
-        label: '自选池',
-        headerTitle: '自选池',
-        icon: 'layers',
+        labelKey: 'navigation:items.watchlists',
+        headerTitleKey: 'watchlists:headerTitle',
+        icon: layersIcon,
       },
     ],
   },
   {
     id: 'data-plane',
-    label: 'Data plane',
+    labelKey: 'navigation:groups.dataPlane',
     items: [
       {
         id: 'data-crawling',
         path: APP_PATHS.dataCrawling,
-        label: '原始数据抓取',
-        headerTitle: '原始数据抓取',
-        icon: 'database-zap',
+        labelKey: 'navigation:items.dataCrawling',
+        headerTitleKey: 'dataCrawling:headerTitle',
+        icon: databaseZapIcon,
       },
       {
         id: 'task-center',
         path: APP_PATHS.taskCenter,
-        label: '任务中心',
-        headerTitle: '任务中心',
-        icon: 'activity',
+        labelKey: 'navigation:items.taskCenter',
+        headerTitleKey: 'taskCenter:headerTitle',
+        icon: activityIcon,
       },
     ],
   },
