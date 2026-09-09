@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="74" height="24" viewBox="0 0 74 24" role="img" aria-label="MIVY">
+  <path fill="#EDF3FF" d="M1 21V3h4.2l5.8 9 5.8-9H21v18h-3.7V9.3l-5.1 7.8H9.8L4.7 9.3V21H1Z"/>
+  <path fill="#AA94FF" d="m28 1 2.25 2.25L28 5.5l-2.25-2.25L28 1Z"/>
+  <path fill="#65A0FF" d="M26.25 7h3.5v6h-3.5zM26.25 15h3.5v6h-3.5zM34 3h4l4.7 12.4L47.4 3h4L44.5 21h-3.6L34 3Z"/>
+  <path fill="#EDF3FF" d="M51 3h4.2l4.4 6.9L64 3h4.2l-6.75 10.3V21h-3.7v-7.7L51 3Z"/>
+  <circle cx="71.2" cy="1.9" r="1.8" fill="#65A0FF"/>
+</svg>
