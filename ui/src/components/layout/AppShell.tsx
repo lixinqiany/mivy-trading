@@ -7,6 +7,7 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { BUSINESS_NAMESPACES } from '../../i18n/namespaces';
 import { useSystemTheme } from '../../providers/system-theme/systemThemeContext';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+import { AppContent } from './AppContent';
 import { AppHeader } from './AppHeader';
 import { AppSidebar } from './AppSidebar';
 import styles from './AppShell.module.css';
@@ -41,9 +42,9 @@ export function AppShell() {
           compact={compactLayout}
           actions={<LanguageSwitcher />}
         />
-        <main className={styles.content} aria-labelledby="page-title">
+        <AppContent>
           <Outlet />
-        </main>
+        </AppContent>
       </section>
     </div>
   );
