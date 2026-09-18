@@ -6,15 +6,14 @@ dependencies = []
 
 [tool.uv.workspace]
 members = [
-    "backends/data-center",
+    "backends/data_crawling",
+    "backends/api",
+    "packages/contracts",
+    "packages/sdk",
 ]
-
-[tool.uv.sources]
-data-center = { workspace = true }
 
 [dependency-groups]
 dev = [
-    "data-center",
     "httpx>=0.28.1",
     "ipykernel>=7.3.0",
     "ipywidgets>=8.1.9",

@@ -12,7 +12,10 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "data-center",
+    "mivy-api",
+    "mivy-contracts",
+    "mivy-data-crawling",
+    "mivy-sdk",
     "mivy-trading",
 ]
 
@@ -402,11 +405,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/4c/13/7d740c5849255756b
 wheels = [
     { url = "https://files.pythonhosted.org/packages/60/97/891a0971e1e4a8c5d2b20bbe0e524dc04548d2307fee33cdeba148fd4fc7/comm-0.2.3-py3-none-any.whl", hash = "sha256:c615d91d75f7f04f095b30d1c1711babd43bdc6419c1be9886a85f2f4e489417", size = 7294, upload-time = "2025-07-25T14:02:02.896Z" },
 ]
-
-[[package]]
-name = "data-center"
-version = "0.1.0"
-source = { editable = "backends/data-center" }
 
 [[package]]
 name = "debugpy"
@@ -1107,13 +1105,58 @@ wheels = [
 ]
 
 [[package]]
+name = "mivy-api"
+version = "0.1.0"
+source = { editable = "backends/api" }
+dependencies = [
+    { name = "mivy-contracts" },
+    { name = "mivy-sdk" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "mivy-contracts", editable = "packages/contracts" },
+    { name = "mivy-sdk", editable = "packages/sdk" },
+]
+
+[[package]]
+name = "mivy-contracts"
+version = "0.1.0"
+source = { editable = "packages/contracts" }
+
+[[package]]
+name = "mivy-data-crawling"
+version = "0.1.0"
+source = { editable = "backends/data_crawling" }
+dependencies = [
+    { name = "mivy-contracts" },
+    { name = "mivy-sdk" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "mivy-contracts", editable = "packages/contracts" },
+    { name = "mivy-sdk", editable = "packages/sdk" },
+]
+
+[[package]]
+name = "mivy-sdk"
+version = "0.1.0"
+source = { editable = "packages/sdk" }
+dependencies = [
+    { name = "mivy-contracts" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "mivy-contracts", editable = "packages/contracts" }]
+
+[[package]]
 name = "mivy-trading"
 version = "0.1.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
 dev = [
-    { name = "data-center" },
     { name = "httpx" },
     { name = "ipykernel" },
     { name = "ipywidgets" },
@@ -1129,7 +1172,6 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "data-center", editable = "backends/data-center" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "ipykernel", specifier = ">=7.3.0" },
     { name = "ipywidgets", specifier = ">=8.1.9" },

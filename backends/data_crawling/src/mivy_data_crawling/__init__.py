@@ -1,0 +1,1 @@
+"""Mivy data crawling service."""
