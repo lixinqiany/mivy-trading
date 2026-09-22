@@ -122,24 +122,15 @@ client = PostgresClient(
 不会因为其他对象也有 `asdict()` 方法就接受它。Protocol 的类型参数用于约束导出结果，
 不负责运行时校验；创建配置对象时不需要额外传入类型参数。
 
-## 验证
+## 代码检查
 
 在仓库根目录执行：
 
 ```bash
-uv run pytest
 uv run mypy
-uv run ruff check packages/sdk/src/mivy_sdk/infra packages/contracts/src/mivy_contracts/protocols migrations/postgres/env.py tests
-uv run ruff format --check packages/sdk/src/mivy_sdk/infra packages/contracts/src/mivy_contracts/protocols migrations/postgres/env.py tests
-uv run pytest -m integration
+uv run ruff check packages/sdk/src/mivy_sdk/infra packages/contracts/src/mivy_contracts/protocols migrations/postgres/env.py
+uv run ruff format --check packages/sdk/src/mivy_sdk/infra packages/contracts/src/mivy_contracts/protocols migrations/postgres/env.py
 ```
-
-默认只运行无数据库测试。集成测试的入口自行读取 `.env` 和环境变量，
-将 `PostgresConfig` 注入 SDK 客户端。集成测试使用同一账号
-创建随机命名的 `mivy_test_*` 数据库，并在连接释放后删除自身创建的数据库。
-该账号需要创建数据库权限；Compose 初始化账号具备此权限。
-数据库不可用或权限不足会失败，不会静默跳过。测试不改动开发库业务表，
-迁移测试在临时目录生成 `0001`、`0002`，不会写入正式迁移历史。
 
 设计参考：[SQLAlchemy 连接与事务](https://docs.sqlalchemy.org/en/20/core/connections.html)、
 [异步资源管理](https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html)、
