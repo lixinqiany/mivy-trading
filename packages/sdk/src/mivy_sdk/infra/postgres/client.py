@@ -10,7 +10,6 @@ from .pool import PostgresPoolOptions
 
 
 class PostgresClient:
-
     def __init__(
         self,
         config: PostgresConfig,

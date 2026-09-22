@@ -27,6 +27,7 @@ dev = [
     "mivy-sdk",
     "mypy>=1.15,<2",
     "pydantic-settings>=2.8,<3",
+    "pre-commit>=4,<5",
     "ruff>=0.11,<1",
 ]
 
@@ -35,7 +36,12 @@ mivy-sdk = { workspace = true }
 
 [tool.ruff]
 target-version = "py312"
-src = ["packages/sdk/src", "packages/contracts/src"]
+src = [
+    "packages/sdk/src",
+    "packages/contracts/src",
+    "backends/api/src",
+    "backends/data_crawling/src",
+]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
@@ -43,4 +49,9 @@ select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["packages/sdk/src/mivy_sdk/infra/postgres", "packages/contracts/src/mivy_contracts/protocols"]
+files = [
+    "packages/sdk/src",
+    "packages/contracts/src",
+    "backends/api/src",
+    "backends/data_crawling/src",
+]

@@ -8,9 +8,9 @@ class PostgresConfig(BaseModel):
     """Validate supplied values without reading environment variables or files."""
 
     model_config = ConfigDict(
-        extra="forbid", # throw an error if any extra fields are provided
-        frozen=True, # make the attribute value immutable after creation
-        hide_input_in_errors=False, # if True， errors don't include the input value
+        extra="forbid",  # throw an error if any extra fields are provided
+        frozen=True,  # make the attribute value immutable after creation
+        hide_input_in_errors=False,  # if True， errors don't include the input value
     )
 
     host: str = Field(min_length=1)
