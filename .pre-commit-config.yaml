@@ -1,0 +1,21 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff lint
+        entry: uv run --no-sync ruff check --fix
+        language: system
+        types_or: [python, pyi]
+        files: ^((packages|backends)/[^/]+/src/|migrations/)
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run --no-sync ruff format
+        language: system
+        types_or: [python, pyi]
+        files: ^((packages|backends)/[^/]+/src/|migrations/)
+      - id: mypy
+        name: mypy strict
+        entry: uv run --no-sync mypy
+        language: system
+        pass_filenames: false
+        files: ^((packages|backends)/[^/]+/src/.*\.pyi?$|((packages|backends)/[^/]+/)?pyproject\.toml$|uv\.lock$|\.pre-commit-config\.yaml$)
