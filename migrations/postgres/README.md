@@ -29,13 +29,20 @@ uv run alembic -c migrations/postgres/alembic.ini current
 uv run alembic -c migrations/postgres/alembic.ini history
 uv run alembic -c migrations/postgres/alembic.ini heads
 
-# 创建迁移脚本，随后填写 upgrade() 和 downgrade()
-uv run alembic -c migrations/postgres/alembic.ini revision --rev-id 0001 -m "create securities"
+# 根据模型生成下一份迁移草稿，随后人工检查 upgrade() 和 downgrade()
+uv run alembic -c migrations/postgres/alembic.ini revision --autogenerate --rev-id 0002 -m "describe change"
+
+# 检查数据库与模型是否存在可自动检测的差异
+uv run alembic -c migrations/postgres/alembic.ini check
 ```
 
-编号依次使用 `0001`、`0002`，文件形如 `0001_create_securities.py`。
+编号依次使用 `0001`、`0002`，文件形如 `0001_create_security_tables.py`。
+编号至少四位，不足补零；超过 `9999` 后使用 `10000`，不重编号已有迁移。
 保持单个 head，由 `down_revision` 确定执行顺序；已在共享环境执行的脚本不改写。
-当前没有业务迁移，暂未接入模型 metadata，不使用 `--autogenerate`。
+`0001_create_security_tables.py` 同时创建标的表和最新行情快照表，
+metadata 来自 `mivy_contracts.db.Base`。交付不自动升级本地数据库。
+`--autogenerate` 和 `check` 不能完整检测 CHECK 变更，枚举允许值和约束需人工核对。
+历史迁移固定保存结构和代码值，不导入当前模型或枚举。
 
 ## 升级与回退
 
@@ -45,14 +52,14 @@ uv run alembic -c migrations/postgres/alembic.ini revision --rev-id 0001 -m "cre
 # 升级到最新版本；容器启动不会自动执行迁移
 uv run alembic -c migrations/postgres/alembic.ini upgrade head
 
-# 升级到指定版本
-uv run alembic -c migrations/postgres/alembic.ini upgrade 0002
+# 升级到首个版本，创建标的表和最新行情快照表
+uv run alembic -c migrations/postgres/alembic.ini upgrade 0001
 
 # 回退一个版本
 uv run alembic -c migrations/postgres/alembic.ini downgrade -1
 
-# 回退到指定版本
-uv run alembic -c migrations/postgres/alembic.ini downgrade 0001
+# 回退全部迁移，删除快照表和证券表及其数据
+uv run alembic -c migrations/postgres/alembic.ini downgrade base
 ```
 
 ## 导出 SQL（不连接数据库）
@@ -61,9 +68,8 @@ uv run alembic -c migrations/postgres/alembic.ini downgrade 0001
 # 从空版本到最新版本的升级 SQL，不读取数据库当前版本
 uv run alembic -c migrations/postgres/alembic.ini upgrade head --sql
 
-# 指定版本范围的升级或回退 SQL
-uv run alembic -c migrations/postgres/alembic.ini upgrade 0001:0002 --sql
-uv run alembic -c migrations/postgres/alembic.ini downgrade 0002:0001 --sql
+# 导出当前最新版本到空版本的回退 SQL
+uv run alembic -c migrations/postgres/alembic.ini downgrade 0001:base --sql
 ```
 
 ## 停止与清理

@@ -3,6 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from mivy_contracts.db import Base
 from mivy_sdk.infra.postgres import (
     PostgresClient,
     PostgresConfig,
@@ -35,8 +36,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Stage 1B will supply metadata from mivy_contracts.db for autogenerate.
-target_metadata = None
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:

@@ -1365,6 +1365,12 @@ requires-dist = [
 name = "mivy-contracts"
 version = "0.1.0"
 source = { editable = "packages/contracts" }
+dependencies = [
+    { name = "sqlalchemy" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "sqlalchemy", specifier = ">=2.0,<3" }]
 
 [[package]]
 name = "mivy-data-crawling"
@@ -1414,6 +1420,7 @@ dev = [
     { name = "jupyterlab" },
     { name = "jupytext" },
     { name = "lxml" },
+    { name = "mivy-contracts" },
     { name = "mivy-sdk" },
     { name = "mypy" },
     { name = "numpy" },
@@ -1435,6 +1442,7 @@ dev = [
     { name = "jupyterlab", specifier = ">=4.6.3" },
     { name = "jupytext", specifier = ">=1.19.5" },
     { name = "lxml", specifier = ">=6.1.2" },
+    { name = "mivy-contracts", editable = "packages/contracts" },
     { name = "mivy-sdk", editable = "packages/sdk" },
     { name = "mypy", specifier = ">=1.15,<2" },
     { name = "numpy", specifier = ">=2.5.2" },

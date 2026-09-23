@@ -27,3 +27,5 @@ mypy 根据根目录 `pyproject.toml` 检查四个包的类型，在 Problems �
 重新暂存后再提交。所有工具复用 uv 环境，依赖变化后先运行 `uv sync --all-packages`。
 
 PostgreSQL 启动与迁移命令见 [迁移说明](migrations/postgres/README.md)。
+
+模型、字段和代码说明见 [contracts](packages/contracts/README.md)。
