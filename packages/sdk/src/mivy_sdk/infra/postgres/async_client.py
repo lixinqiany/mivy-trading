@@ -2,7 +2,13 @@
 
 from contextlib import AbstractAsyncContextManager
 
-from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncConnection,
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from .config import PostgresConfig
 from .pool import PostgresPoolOptions
@@ -11,7 +17,7 @@ from .pool import PostgresPoolOptions
 class AsyncPostgresClient:
     """Own a lazy async engine for use within one event loop.
 
-    Each task needs its own connection. Await dispose() before closing the loop.
+    Each task needs its own connection or session. Await dispose() before loop exit.
     """
 
     def __init__(
@@ -22,6 +28,7 @@ class AsyncPostgresClient:
     ) -> None:
         options = pool_options if pool_options is not None else PostgresPoolOptions()
         self._engine = create_async_engine(config.url, **options.asdict())
+        self._session_factory = async_sessionmaker(self._engine, expire_on_commit=False)
 
     @property
     def engine(self) -> AsyncEngine:
@@ -42,8 +49,24 @@ class AsyncPostgresClient:
         """
         return self._engine.begin()
 
+    def session(self) -> AsyncSession:
+        """Create a session for ``async with``; do not await this method.
+
+        Exit closes the session and rolls back uncommitted work. No automatic
+        commit. Each concurrent task needs its own session.
+        """
+        return self._session_factory()
+
+    def session_begin(self) -> AbstractAsyncContextManager[AsyncSession]:
+        """Create a session; commit on success or roll back on error, then close.
+
+        Use ``async with client.session_begin()`` without awaiting this method.
+        Exceptions propagate to the caller.
+        """
+        return self._session_factory.begin()
+
     async def dispose(self) -> None:
-        """Dispose the pool; release borrowed connections before awaiting.
+        """Dispose the pool; close sessions and release connections first.
 
         Borrowed connections stay open. The engine can create a new pool later.
         """

@@ -4,6 +4,7 @@ from contextlib import AbstractContextManager
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Connection, Engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from .config import PostgresConfig
 from .pool import PostgresPoolOptions
@@ -18,6 +19,7 @@ class PostgresClient:
     ) -> None:
         options = pool_options if pool_options is not None else PostgresPoolOptions()
         self._engine = create_engine(config.url, **options.asdict())
+        self._session_factory = sessionmaker(self._engine, expire_on_commit=False)
 
     @property
     def engine(self) -> Engine:
@@ -37,8 +39,22 @@ class PostgresClient:
         """
         return self._engine.begin()
 
+    def session(self) -> Session:
+        """Create a session for ``with``; close on exit without automatic commit.
+
+        Uncommitted work is rolled back. Each thread needs its own session.
+        """
+        return self._session_factory()
+
+    def session_begin(self) -> AbstractContextManager[Session]:
+        """Create a session; commit on success or roll back on error, then close.
+
+        Use ``with client.session_begin()``. Exceptions propagate to the caller.
+        """
+        return self._session_factory.begin()
+
     def dispose(self) -> None:
-        """Dispose the pool; release borrowed connections before calling.
+        """Dispose the pool; close sessions and release connections first.
 
         Borrowed connections stay open. The engine can create a new pool later.
         """
