@@ -1,5 +1,11 @@
 name: mivy-trading
 
+# broker 主动连接使用 username/password；user_<name> 定义允许登录的账号。
+x-kafka-broker-jaas: &kafka-broker-jaas >-
+  org.apache.kafka.common.security.plain.PlainLoginModule required
+  username="${KAFKA_USERNAME:-}" password="${KAFKA_PASSWORD:-}"
+  user_${KAFKA_USERNAME:-}="${KAFKA_PASSWORD:-}";
+
 services:
   postgres:
     image: postgres:17-bookworm
@@ -18,5 +24,81 @@ services:
       retries: 3
       start_period: 5s
 
+  kafka:
+    image: apache/kafka:4.3.1
+    environment:
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID:-not-configured}
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@127.0.0.1:9093
+      # 引用下方 LISTENERS 中的 CONTROLLER 入口，其地址与 QUORUM_VOTERS 对应。
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # 定义入口名称及容器内实际监听地址；连接哪个容器端口，就进入对应入口。
+      # EXTERNAL / INTERNAL 是自定义名称，不会自动判断客户端位于 Docker 内还是外。
+      # 显式设置 LISTENERS，否则镜像会从 ADVERTISED_LISTENERS 推导并遗漏 CONTROLLER。
+      KAFKA_LISTENERS: EXTERNAL://0.0.0.0:9092,INTERNAL://0.0.0.0:29092,CONTROLLER://127.0.0.1:9093
+      # 按同名入口向客户端公布可达地址：EXTERNAL 使用宿主机映射端口，INTERNAL 使用 Docker 服务地址。
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://127.0.0.1:${KAFKA_PORT:-9092},INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:SASL_PLAINTEXT,INTERNAL:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT
+      # 指定 broker 间通信使用 LISTENERS 中的 INTERNAL 入口。
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_LISTENER_NAME_INTERNAL_PLAIN_SASL_JAAS_CONFIG: *kafka-broker-jaas
+      KAFKA_LISTENER_NAME_EXTERNAL_PLAIN_SASL_JAAS_CONFIG: *kafka-broker-jaas
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_METADATA_LOG_DIR: /var/lib/kafka/data
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    ports:
+      - "127.0.0.1:${KAFKA_PORT:-9092}:9092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    configs:
+      - source: kafka-client
+        target: /etc/kafka/client.properties
+    healthcheck:
+      test:
+        - CMD
+        - /opt/kafka/bin/kafka-topics.sh
+        - --bootstrap-server
+        - kafka:29092
+        - --command-config
+        - /etc/kafka/client.properties
+        - --list
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 30s
+    stop_grace_period: 30s
+
+  jikkou:
+    image: streamthoughts/jikkou:1.1.0
+    profiles: ["tools"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      JIKKOU_KAFKA_SASL_JAAS_CONFIG: >-
+        org.apache.kafka.common.security.plain.PlainLoginModule required
+        username="${KAFKA_USERNAME:-}" password="${KAFKA_PASSWORD:-}";
+    working_dir: /opt/mivy/jikkou
+    volumes:
+      - ../migrations/kafka:/opt/mivy/jikkou:ro
+      - ../migrations/kafka/config.json:/etc/jikkou/config:ro
+
 volumes:
   postgres-data:
+  kafka-data:
+
+configs:
+  kafka-client:
+    content: |
+      security.protocol=SASL_PLAINTEXT
+      sasl.mechanism=PLAIN
+      sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="${KAFKA_USERNAME:-}" password="${KAFKA_PASSWORD:-}";
+      request.timeout.ms=5000
+      default.api.timeout.ms=10000

@@ -1,0 +1,7 @@
+{
+  "currentContext": "compose",
+  "compose": {
+    "configFile": "/opt/mivy/jikkou/application.conf",
+    "configProps": {}
+  }
+}

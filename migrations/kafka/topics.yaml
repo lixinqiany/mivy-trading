@@ -1,0 +1,11 @@
+apiVersion: kafka.jikkou.io/v1
+kind: KafkaTopic
+metadata:
+  name: mivy.data.crawling-tasks
+spec:
+  partitions: 2
+  replicas: 1
+  configs:
+    min.insync.replicas: 1
+    retention.ms: 604800000 # 7 天；消费进度不影响消息保留时间。
+    cleanup.policy: delete

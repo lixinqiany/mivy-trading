@@ -12,7 +12,7 @@ uv sync
 [ -f .env ] || cp .env.example .env
 
 # 启动 PostgreSQL，并等待健康检查通过（需先启动 Docker）
-docker compose --env-file .env -f docker/compose.yaml up -d --wait
+docker compose --env-file .env -f docker/compose.yaml up -d --wait postgres
 
 # 查看服务状态和数据库日志
 docker compose --env-file .env -f docker/compose.yaml ps
@@ -82,10 +82,13 @@ uv run alembic -c migrations/postgres/alembic.ini downgrade 0002:base --sql
 ## 停止与清理
 
 ```bash
-# 删除容器和网络，保留数据库数据；重新运行 up 即可恢复服务
+# 仅停止 PostgreSQL，保留数据，不影响 Kafka。
+docker compose --env-file .env -f docker/compose.yaml stop postgres
+
+# 删除整个 Compose 项目的容器和网络，保留 PostgreSQL 和 Kafka 数据卷。
 docker compose --env-file .env -f docker/compose.yaml down
 
-# 删除容器、网络及数据卷，清空全部本地数据库数据
+# 清空整个项目：同时删除 PostgreSQL 数据及 Kafka 消息、消费进度。
 docker compose --env-file .env -f docker/compose.yaml down -v
 ```
 

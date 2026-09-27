@@ -28,4 +28,7 @@ mypy 根据根目录 `pyproject.toml` 检查四个包的类型，在 Problems �
 
 PostgreSQL 启动与迁移命令见 [迁移说明](migrations/postgres/README.md)。
 
+Kafka 部署及 Topic 管理见 [Kafka 说明](migrations/kafka/README.md)，
+同步、异步收发示例见 [SDK 说明](packages/sdk/README.md)。
+
 模型、字段和代码说明见 [contracts](packages/contracts/README.md)。
